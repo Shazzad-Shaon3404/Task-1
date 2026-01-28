@@ -7,16 +7,8 @@ This repository contains my implementation for **Task 1**:
 I reproduced **Table‑5 style** results on three MOABB datasets using **braindecode** models (**EEGNet** and **ShallowFBCSPNet**) and provided required visualizations (TensorBoard curves, t‑SNE, gradients, and a Figure‑3‑style interpretation figure).
 
 ---
+ training stages
 
-## ✅ Requirements coverage
-
-- ✅ **Reproduce EEGNet / ShallowConvNet results** on **three datasets**
-- ✅ **Cross‑X evaluation** for each dataset: **inter‑subject** and **inter‑session**
-- ✅ **Mandatory TensorBoard**: training/validation/testing curves (**loss + balanced metrics + extras**)
-- ✅ **t‑SNE** at 3 stages: **raw**, **hidden features**, **network outputs (logits)**
-- ✅ **Gradient visualization** at **early / middle / late** training stages
-- ✅ **Optional diagnostics**: **confusion matrices**
-- ✅ **Figure‑3‑like** interpretation: contribution proxy + spectral kernel proxy + topomaps
 
 ---
 
@@ -32,42 +24,41 @@ We evaluate on:
 
 ## Preprocessing (MOABB + MNE)
 
-Pipeline (paper‑style + extra steps):
+Pipeline (suggested + extra steps):
 
 - Resample to **250 Hz**
 - Bandpass/temporal filter: **4–36 Hz**
 - Crop epochs to **≤ 3 seconds**
-- *(extra)* Optional **notch** (if enabled)
+- *(extra)* Optional **notch** 
 - *(extra)* **Average reference (CAR)**
-- *(extra)* **Trial‑wise z‑score normalization** (with clipping)
+- *(extra)* **Trial‑wise z‑score normalization** 
 
 ---
 
 ## Models (braindecode)
 
 - **EEGNet**
-- **ShallowFBCSPNet** (ShallowConvNet family)
+- **ShallowFBCSPNet**
 
 ---
 
-## Evaluation protocol (Cross‑X)
+## Evaluation protocol
 
 For each dataset, we run:
 
 - **Inter‑subject**: GroupKFold over **subject**
-- **Inter‑session**: GroupKFold over **subject_session** (or subject_run when session is unavailable)
+- **Inter‑session**: GroupKFold over **subject_session**
 
 Metrics (reported in results table + TensorBoard):
 
-- **Balanced Accuracy (BalAcc)** *(paper‑style)*
+- **Balanced Accuracy (BalAcc)**
 - **Macro‑F1**
 - **MCC**
 - **Cohen’s Kappa**
-- **AUC** *(binary only)*
 
 ---
 
-## Results (Table‑5 style)
+## Results
 
 | Dataset | Setting | Classes | Model | BalAcc | MacroF1 | MCC | Kappa |
 |---|---|---|---|---:|---:|---:|---:|
@@ -84,21 +75,13 @@ Metrics (reported in results table + TensorBoard):
 | Lee2019_MI | inter-session | left_hand, right_hand | EEGNet | 0.530 | 0.501 | 0.068 | 0.060 |
 | Lee2019_MI | inter-session | left_hand, right_hand | ShallowFBCSPNet | 0.580 | 0.577 | 0.163 | 0.160 |
 
-**Rendered results screenshot:**
-
-![Table-5 style results](assets/table5_style_results.png)
 
 ---
 
-## TensorBoard (mandatory)
+## TensorBoard
 
 TensorBoard curves include **train/val/test loss** and **balanced performance metrics**.
 
-### EEGNet TensorBoard
-![TensorBoard EEGNet](assets/tensorboard_eegnet.png)
-
-### ShallowFBCSPNet TensorBoard
-![TensorBoard ShallowFBCSPNet](assets/tensorboard_shallowfbcspnet.png)
 
 Launch (Colab):
 ```bash
@@ -122,40 +105,9 @@ Gradient norm snapshots at **early / middle / late** epochs.
 
 Saved to: `out_root/<dataset>/<model>/<mode>/grad_*.png`
 
-### 3) Figure‑3‑like interpretation
-Figure‑3‑style proxy plot for EEGNet/ShallowFBCSPNet (contribution proxy + spectral kernel proxy + topomaps).
 
-![Figure-3-like](assets/figure3_like_topomaps.png)
+
 
 ---
 
-## How to run (Colab / A100)
 
-1) Install:
-```bash
-pip install moabb mne braindecode pyriemann scikit-learn pandas numpy matplotlib tensorboard
-```
-
-2) Run pipeline:
-- preprocess once and cache in memory
-- train/evaluate EEGNet + ShallowFBCSPNet
-- save CSV + figures
-- write TensorBoard event logs
-
-Outputs:
-- CSV: `out_root/table5_like_results.csv`
-- TensorBoard: `runs_root/<dataset>/<model>/<mode>/fold*/events...`
-- Figures: `out_root/<dataset>/<model>/<mode>/*.png`
-
----
-
-## Notes
-- In **fast_dev_run**, only one fold is run for quick debugging. Disable for full folds.
-- MOABB may print warnings about annotation concatenation; those do not affect evaluation.
-
----
-
-## Acknowledgements
-- **MOABB** for standardized EEG benchmark datasets
-- **MNE** for EEG preprocessing utilities
-- **braindecode** for EEGNet and ShallowFBCSPNet implementations
