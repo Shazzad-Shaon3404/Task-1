@@ -1,4 +1,4 @@
-# Task 1 — EEG Data Processing, Visualization, and Classical Neural Networks
+# Task 1: EEG Data Processing, Visualization, and Classical Neural Networks
 
 This repository contains my implementation for **Task 1**:
 
